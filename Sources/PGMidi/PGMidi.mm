@@ -351,7 +351,11 @@ void PGMIDIVirtualDestinationReadProc(const MIDIPacketList *pktlist, void *readP
     
     if (virtualSourceEnabled)
     {
-        OSStatus s = MIDISourceCreate(client, (__bridge CFStringRef)@"MidiMonitor Source", &virtualSourceEndpoint);
+        NSString *sourceName = @"MidiMonitor Source";
+        if (virtualEndpointName != nil) {
+            sourceName = [NSString stringWithFormat:@"%@ Source", virtualEndpointName];
+        }
+        OSStatus s = MIDISourceCreate(client, (__bridge CFStringRef)sourceName, &virtualSourceEndpoint);
         NSLogError(s, @"Create MIDI virtual source");
         if (s) return;
         
@@ -391,7 +395,12 @@ void PGMIDIVirtualDestinationReadProc(const MIDIPacketList *pktlist, void *readP
     
     if (virtualDestinationEnabled)
     {
-        OSStatus s = MIDIDestinationCreate(client, (__bridge CFStringRef)@"MidiMonitor Destination", PGMIDIVirtualDestinationReadProc, (__bridge void*)self, &virtualDestinationEndpoint);
+        NSString *destName = @"MidiMonitor Destination";
+        if (virtualEndpointName != nil) {
+            destName = [NSString stringWithFormat:@"%@ Destination", virtualEndpointName];
+        }
+
+        OSStatus s = MIDIDestinationCreate(client, (__bridge CFStringRef)destName, PGMIDIVirtualDestinationReadProc, (__bridge void*)self, &virtualDestinationEndpoint);
         NSLogError(s, @"Create MIDI virtual destination");
         if (s) return;
         
